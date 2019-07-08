@@ -1,10 +1,11 @@
 """Calculate the neighborhood."""
 import numpy as np
-from old20 import old_subloop
-from rd import rd_subloop
+
 from functools import partial
-from n import n_subloop
-from rn import r_subloop
+from .old import old_subloop
+from .rd import rd_subloop
+from .n import n_subloop
+from .rn import r_subloop
 
 
 def _check_args(X, Y, n):
@@ -14,7 +15,7 @@ def _check_args(X, Y, n):
         Y = X
     else:
         Y = np.asarray(Y)
-    if isinstance(n, int):
+    if isinstance(n, (int, float)):
         n = [n]
         was_int = True
     n = np.asarray(n)
@@ -22,37 +23,31 @@ def _check_args(X, Y, n):
         raise ValueError("n should be positive.")
     if np.any([x > X.shape[0]-1 for x in n]):
         raise ValueError("Your n was bigger than the number of words - 1.")
-    if np.unique(X, axis=1) != len(X):
+    if len(np.unique(X, axis=np.ndim(X)-1)) != len(X):
         raise ValueError("There are duplicates in your dataset. Please remove"
                          " these, as they will make your estimates unreliable")
     return X, Y, n, was_int
 
 
-def radius(function,
-           X,
+def radius(X,
            Y=None,
-           radius=None,
+           radius=1,
            memory_safe=False,
+           function=None,
            **kwargs):
     X, Y, radius, was_int = _check_args(X, Y, radius)
-    largest_n = max(radius)
-    vals = function(X, Y, largest_n, **kwargs)
-    vals = np.sort(vals, axis=1)
-
-    out = []
-    for x in radius:
-        out.append(vals[:, :x+1].sum(1))
+    vals = function(X, Y, radius, **kwargs)
 
     if was_int:
-        out = vals[0]
-    return out
+        vals = vals[:, 0]
+    return vals
 
 
-def neighborhood(function,
-                 X,
+def neighborhood(X,
                  Y=None,
                  n=20,
                  memory_safe=False,
+                 function=None,
                  **kwargs):
     """
     Calculate the representation density for values of n.
@@ -93,7 +88,7 @@ def neighborhood(function,
         out.append(vals[:, :x+1].sum(1))
 
     if was_int:
-        out = vals[0]
+        out = out[0]
     return out
 
 
