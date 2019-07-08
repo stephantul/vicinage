@@ -13,4 +13,4 @@ def r_subloop(X,
     for x in radius:
         results.append(np.sum(dist_mtr < x, 1))
 
-    return np.stack(results, 1)
+    return np.stack(results)
