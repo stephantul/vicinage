@@ -36,4 +36,4 @@ def n_subloop(X,
     with Pool(n_jobs) as p:
         result = dict(p.map(func, X))
 
-    return np.array([result[x] for x in X])
+    return np.asarray([result[x] for x in X])
