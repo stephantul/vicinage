@@ -5,12 +5,12 @@ from sklearn.metrics import pairwise_distances
 
 def r_subloop(X,
               Y,
-              function="cosine",
-              radius=1):
+              radius=1,
+              function="cosine"):
     """Calculate distance from each word in word_a to each word in word_b."""
     dist_mtr = pairwise_distances(X, Y, metric=function)
     results = []
     for x in radius:
         results.append(np.sum(dist_mtr < x, 1))
 
-    return results
+    return np.stack(results, 1)
