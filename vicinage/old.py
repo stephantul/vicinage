@@ -32,15 +32,15 @@ def calc_all(x, Y, n, function):
 
 def old_subloop(X,
                 Y,
-                function=levenshtein_distance,
                 n=20,
+                function=levenshtein_distance,
                 n_jobs=-1):
     """Calculate distance from each word in word_a to each word in word_b."""
     if n >= len(Y) - 1:
         job_func = calc_all
     else:
         job_func = calc_dist
-    func = partial(job_func, words_b=Y, n=n, function=function)
+    func = partial(job_func, Y=Y, n=n, function=function)
 
     if n_jobs == -1:
         n_jobs = cpu_count()
@@ -48,4 +48,4 @@ def old_subloop(X,
     with Pool(n_jobs) as p:
         result = dict(p.map(func, X))
 
-    return np.array([result[x] for x in words_a])
+    return np.array([result[x] for x in X])
